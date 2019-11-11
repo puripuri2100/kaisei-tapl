@@ -1,4 +1,1 @@
-*.cmi
-*.cmx
-*.o
-ch4
+./ch4_build
