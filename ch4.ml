@@ -41,34 +41,34 @@ let rec isval t =
 
 let rec eval1 t =
   match t with
-  | TmIf (TmTrue, t2, _) -> (t2,E_IfTrue)
-  | TmIf (TmFalse, _, t3) -> (t3,E_IfFalse)
+  | TmIf (TmTrue, t2, _) -> (t2, E_IfTrue)
+  | TmIf (TmFalse, _, t3) -> (t3, E_IfFalse)
   | TmIf (t1, t2, t3) -> 
     let (t1',_) = eval1 t1 in
-    (TmIf(t1', t2, t3),E_If)
+    (TmIf(t1', t2, t3), E_If)
   | TmSucc (t1) ->
     let (t1',_) = eval1 t1 in
-    (TmSucc(t1'),E_Succ)
-  | TmPred(TmZero) -> (TmZero,E_PredZero)
-  | TmPred(TmSucc(nv1)) when (isnumericval nv1) -> (nv1,E_PredSucc)
+    (TmSucc(t1'), E_Succ)
+  | TmPred(TmZero) -> (TmZero, E_PredZero)
+  | TmPred(TmSucc(nv1)) when (isnumericval nv1) -> (nv1, E_PredSucc)
   | TmPred(t1) ->
     let (t1',_) = eval1 t1 in
-    (TmPred(t1'),E_Pred)
-  | TmIsZero(TmZero) -> (TmTrue,E_IsZeroZero)
-  | TmIsZero(TmSucc(nv1)) when (isnumericval nv1) -> (TmFalse,E_IsZeroSucc)
+    (TmPred(t1'), E_Pred)
+  | TmIsZero(TmZero) -> (TmTrue, E_IsZeroZero)
+  | TmIsZero(TmSucc(nv1)) when (isnumericval nv1) -> (TmFalse, E_IsZeroSucc)
   | TmIsZero(t1) ->
     let (t1',_) = eval1 t1 in
-    (TmIsZero(t1'),E_IsZero)
+    (TmIsZero(t1'), E_IsZero)
   | _ -> raise NoRuleApplies
 
 
 let rec eval t =
   let tr'opt =
-    try let (t',r') = eval1 t in Some(t',r')
+    try let (t', r') = eval1 t in Some(t', r')
     with NoRuleApplies -> None
   in
   match tr'opt with
-  | Some(t',r') -> eval t'
+  | Some(t', r') -> eval t'
   | None -> t
 
 
@@ -84,32 +84,32 @@ let rec term_to_string t = match t with
 let rule_to_string r = match r with
   | E_IfTrue -> "E_IfTrue"
   | E_IfFalse -> "E_IfFalse"
-  | E_If->"E_If"
-  | E_Succ->"E_Succ"
-  | E_PredSucc->"E_PredSucc"
-  | E_PredZero->"E_PredZero"
-  | E_Pred->"E_Pred"
-  | E_IsZeroZero->"E_IsZeroZero"
-  | E_IsZeroSucc->"E_IsZeroSucc"
-  | E_IsZero->"E_IsZero"
-  | Initial->"Initial"
+  | E_If -> "E_If"
+  | E_Succ -> "E_Succ"
+  | E_PredSucc -> "E_PredSucc"
+  | E_PredZero -> "E_PredZero"
+  | E_Pred -> "E_Pred"
+  | E_IsZeroZero -> "E_IsZeroZero"
+  | E_IsZeroSucc -> "E_IsZeroSucc"
+  | E_IsZero -> "E_IsZero"
+  | Initial -> "Initial"
 
 let rec show tr =
-  let (t,r) = tr in
+  let (t, r) = tr in
   Printf.printf "%s by %s\n" (term_to_string t) (rule_to_string r)
 
 
 let rec show_step_by_step tr =
-  let (t,r) = tr in
+  let (t, r) = tr in
   let tr'opt =
-    try let (t',r') = eval1 t in Some(t',r')
+    try let (t', r') = eval1 t in Some(t', r')
     with NoRuleApplies -> None
   in
   match tr'opt with
-  | Some(t',r') -> show tr; let _ = read_line () in show_step_by_step (t',r')
+  | Some(t', r') -> show tr; let _ = read_line () in show_step_by_step (t', r')
   | None -> show tr
 
 
 let main =
   let t = TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmZero) in
-  (t,Initial) |> show_step_by_step
+  (t, Initial) |> show_step_by_step
