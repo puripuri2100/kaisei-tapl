@@ -1,11 +1,5 @@
-type term =
-  | TmTrue
-  | TmFalse
-  | TmIf of term * term * term
-  | TmZero
-  | TmSucc of term
-  | TmPred of term
-  | TmIsZero of term
+open Ch4_parse
+open Ch4_sub
 
 type rule =
   | E_IfTrue
@@ -109,8 +103,12 @@ let rec show_step_by_step tr =
   | Some(t', r') -> show tr; let _ = read_line () in show_step_by_step (t', r')
   | None -> show tr
 
+let str = "if (is_zero(zero)) (true) (false)"
+
+let t = Ch4_parse.parse Ch4_lex.lex (Lexing.from_string str)
 
 let main =
-  let t = TmIf(TmIf(TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmIsZero(TmZero)),TmIf(TmTrue,TmTrue,TmTrue),TmFalse),TmSucc(TmSucc(TmSucc(TmZero))),TmFalse) in
+(*  let t = TmIf(TmIf(TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmIsZero(TmZero)),TmIf(TmTrue,TmTrue,TmTrue),TmFalse),TmSucc(TmSucc(TmSucc(TmZero))),TmFalse) in
+*)
   (t,Initial) |> show_step_by_step;
   print_newline()
