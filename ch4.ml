@@ -90,7 +90,7 @@ let rule_to_string r = match r with
 
 let rec show tr =
   let (t,r) = tr in
-  Printf.printf "%s by %s" (term_to_string t) (rule_to_string r)
+  Printf.printf "%s by %s\n" (term_to_string t) (rule_to_string r)
 
 
 let rec show_step_by_step tr =
@@ -100,16 +100,31 @@ let rec show_step_by_step tr =
     with NoRuleApplies -> None
   in
   match tr'opt with
-  | Some(t', r') -> show tr; let _ = read_line () in show_step_by_step (t', r')
+  | Some(t', r') -> let _ = show tr in show_step_by_step (t', r')
   | None -> show tr
 
-let str = "if (is_zero(zero)) then if is_zero(succ(zero)) then true else false else false"
+let str = "
+  if is_zero(zero) then
+    if is_zero(succ(zero)) then
+      if true then true else is_zero(succ(zero))
+    else
+      if is_zero(succ(succ(succ(zero)))) then
+        false
+      else
+        if is_zero(succ(succ(pred(succ(pred(pred(zero))))))) then
+          false
+        else
+          true
+  else
+    false
+  "
 
 let t = Ch4_parse.parse Ch4_lex.lex (Lexing.from_string str)
 
 let main =
 (*
-  let t = TmIf(TmIf(TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmIsZero(TmZero)),TmIf(TmTrue,TmTrue,TmTrue),TmFalse),TmSucc(TmSucc(TmSucc(TmZero))),TmFalse) in
+  let t =
+    TmIf(TmIf(TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmIsZero(TmZero)),TmIf(TmTrue,TmTrue,TmTrue),TmFalse),TmSucc(TmSucc(TmSucc(TmZero))),TmFalse) in
 *)
   (t,Initial) |> show_step_by_step;
   print_newline()
