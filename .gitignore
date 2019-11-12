@@ -4,7 +4,7 @@
 *.o
 ch4
 *.out
-./ch4_build
+ch4_build
 ch4_lex.ml
 ch4_parse.ml
 ch4_parse.mli

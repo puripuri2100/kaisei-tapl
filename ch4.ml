@@ -1,5 +1,6 @@
-open Ch4_parse
 open Ch4_sub
+open Ch4_parse
+open Ch4_lex
 
 type rule =
   | E_IfTrue
@@ -119,7 +120,7 @@ let str = "
     false
   "
 
-let t = Ch4_parse.parse Ch4_lex.lex (Lexing.from_string str)
+let t = str |> Lexing.from_string |> parse lex
 
 let main =
 (*
