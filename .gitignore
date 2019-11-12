@@ -2,3 +2,5 @@
 *.cmx
 *.o
 ch4
+*.out
+./ch4_build
