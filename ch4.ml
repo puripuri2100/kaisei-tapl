@@ -95,7 +95,7 @@ let rule_to_string r = match r with
   | Initial -> "Initial"
 
 let rec show tr =
-  let (t, r) = tr in
+  let (t,r) = tr in
   Printf.printf "%s by %s\n" (term_to_string t) (rule_to_string r)
 
 
@@ -112,4 +112,4 @@ let rec show_step_by_step tr =
 
 let main =
   let t = TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmZero) in
-  (t, Initial) |> show_step_by_step
+  (t,Initial) |> show_step_by_step
