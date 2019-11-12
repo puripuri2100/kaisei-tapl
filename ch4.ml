@@ -103,7 +103,7 @@ let rec show_step_by_step tr =
   | Some(t', r') -> show tr; let _ = read_line () in show_step_by_step (t', r')
   | None -> show tr
 
-let str = "if (is_zero(zero)) (true) (false)"
+let str = "if (is_zero(zero)) then is_zero(succ(zero)) else false"
 
 let t = Ch4_parse.parse Ch4_lex.lex (Lexing.from_string str)
 

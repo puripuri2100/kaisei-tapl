@@ -10,6 +10,8 @@ let alnum = digit | alpha
 rule lex = parse
   | space   { lex lexbuf }
   | "if"  {TmlIf}
+  | "then" {Then}
+  | "else" {Else}
   | "true"  {TmlTrue}
   | "false" {TmlFalse}
   | "succ"  {TmlSucc}

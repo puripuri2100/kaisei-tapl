@@ -2,7 +2,8 @@
   open Ch4_sub
 %}
 
-%token TmlTrue TmlFalse TmlIf TmlZero TmlSucc TmlPred TmlIsZero TmlEnd
+%token TmlTrue TmlFalse TmlZero TmlSucc TmlPred TmlIsZero TmlEnd
+%token TmlIf Then Else
 %token LPAREN RPAREN
 %token EOF
 
@@ -16,7 +17,7 @@ parse :
 term :
   | TmlTrue { TmTrue }
   | TmlFalse { TmFalse }
-  | TmlIf term term term { TmIf($2, $3, $4) }
+  | TmlIf term Then term Else term { TmIf($2, $4, $6) }
   | TmlZero { TmZero }
   | TmlSucc term { TmSucc($2) }
   | TmlPred term { TmPred($2) }
