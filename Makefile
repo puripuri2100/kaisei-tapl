@@ -1,9 +1,13 @@
-ch4: ch4.ml
-	-mkdir ch4_build
-	cd ch4_build
-	ocamlfind ocamlopt -o ch4 -linkpkg ch4.ml
-	./ch4
+ch4: ch4_build/ch4.cmx ch4_build/ch4_parser.cmx
+	ocamlopt -o ch4_build/ch4 ch4_build/ch4_parser.cmx ch4_build/ch4.cmx
+	./ch4_build/ch4
 
+
+ch4_build/ch4.cmx : ch4.ml
+	ocamlopt -o ch4_build/ch4.cmx -c ch4.ml
+
+ch4_build/ch4_parser.cmx : ch4_parser.ml
+	ocamlopt -o ch4_build/ch4_parser.cmx -c ch4_parser.ml
 
 clean:
-	@rm -rf *.cmi *.cmx *.o ch4
+	@rm -rf ./ch4_build/*

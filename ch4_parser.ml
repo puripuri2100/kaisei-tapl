@@ -1,14 +1,18 @@
+open Ch4_token_def
+
 type symbol =
   | NtmlTerm
   | TmlTrue
   | TmlFalse
   | TmlIf
+  | TmlThen
+  | TmlElse
   | TmlZero
   | TmlSucc
   | TmlPred
   | TmlIsZero
   | TmlEnd
-  | TmlUnknown
+  | TmlStr of string
 
 let string_to_stack s =
   let rec exp i st =
@@ -51,29 +55,55 @@ let lex_analyze (s : string) =
         let str = string_from_chars (read_till_nalpha chsta [c]) in
         (match str with
           | "if" -> lex (TmlIf::l)
+          | "then" -> lex (TmlThen::l)
+          | "else" -> lex (TmlElse::l)
           | "true" -> lex (TmlTrue::l)
           | "false" -> lex (TmlFalse::l)
           | "succ" -> lex (TmlSucc::l)
           | "pred" -> lex (TmlPred::l)
           | "zero" -> lex (TmlZero::l)
           | "is_zero" -> lex (TmlIsZero::l)
-          | _ -> lex (TmlUnknown::l))
+          | str -> lex (TmlStr(str)::l))
       | Some(_) -> lex l
       | None -> list_to_stack (TmlEnd::l) (*読み終わったらスタックにして返す*)
   in
   lex []
 
-(* let read_term sym_stack input_stack =
-  match try_pop input_stack with
-    | TmlTrue -> Tm *)
 
-(* let parse s =
+exception SyntaxError
+
+let rec read_term sym_stack input_stack =
+  match try_pop input_stack with
+    | Some(TmlTrue) -> TmTrue
+    | Some(TmlFlase) -> TmFlase
+    | Some(TmlIf) -> 
+      let t1 = read_till_then sym_stack input_stack in
+      let t2 = read_till_else sym_stack input_stack in
+      let t3 = read_term sym_stack input_stack in
+      TmIf(
+        t1,t2,t3
+      )
+    | Some(TmlZero) -> TmZero
+    | Some(TmlSucc) -> TmSucc(read_term sym_stack input_stack)
+    | Some(TmlPred) -> TmPred(read_term sym_stack input_stack)
+    | Some(TmlIsZero) -> TmIsZero(read_term sym_stack input_stack)
+    | _ -> 
+and read_till_then sym_stack input_stack =
+  let t = read_term sym_stack input_stack in
+  match try_pop input_stack with
+    | Some(TmlThen) -> t
+    | _ -> raise SyntaxError
+and read_till_else sym_stack input_stack =
+  let t = read_term sym_stack input_stack in
+  match try_pop input_stack with
+    | Some(TmlElse) -> t
+    | _ -> raise SyntaxError
+    
+
+let parse s =
   let input_stack = lex_analyze s in
   let sym_stack : symbol Stack.t = Stack.create() in
   Stack.push TmlEnd stack;
   Stack.push NtmlTerm stack;
-  let read input_ch =
-    match (Stack.pop stack) with
-    | SymChar(ch) when (ch==input_ch) -> ()
-    | SymTrue -> 
-  List.iter  *)
+  try let t = read_term sym_stack input_stack in Some(t)
+  with SyntaxError -> print_string "gomi!" ; None
