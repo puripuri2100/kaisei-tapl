@@ -1,0 +1,13 @@
+if is_zero(zero) then
+  if is_zero(succ(zero)) then
+    if true then true else is_zero(succ(zero))
+  else
+    if is_zero(succ(succ(succ(zero)))) then
+      false
+    else
+      if is_zero(succ(succ(pred(succ(pred(pred(zero))))))) then
+        false
+      else
+        true
+else
+  false
