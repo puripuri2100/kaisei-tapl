@@ -18,9 +18,6 @@ type rule =
   | Initial
   | E_Error
 
-
-
-
 let rec isnumericval t =
   match t with
   | TmZero -> true
@@ -93,11 +90,10 @@ let rec show tr =
   let (t,r) = tr in
   Printf.printf "%s by %s\n" (term_to_string t) (rule_to_string r)
 
-
 let rec show_step_by_step tr =
   let (t, r) = tr in
   match t with
-  | v when isval v -> ()
+  | v when isval v -> show tr
   | term ->
     let (t', r') = eval1 t in
     let _ = show tr in show_step_by_step (t', r')
