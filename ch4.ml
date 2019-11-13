@@ -1,3 +1,5 @@
+open Tapl_base
+
 open Ch4_sub
 open Ch4_parse
 open Ch4_lex
@@ -104,28 +106,23 @@ let rec show_step_by_step tr =
   | Some(t', r') -> let _ = show tr in show_step_by_step (t', r')
   | None -> show tr
 
-let str = "
-  if is_zero(zero) then
-    if is_zero(succ(zero)) then
-      if true then true else is_zero(succ(zero))
-    else
-      if is_zero(succ(succ(succ(zero)))) then
-        false
-      else
-        if is_zero(succ(succ(pred(succ(pred(pred(zero))))))) then
-          false
-        else
-          true
-  else
-    false
-  "
 
-let t = str |> Lexing.from_string |> parse lex
+let make_t file_name =
+  let channel = open_in file_name in
+  channel |> Lexing.from_channel |> parse lex
 
-let main =
-(*
-  let t =
-    TmIf(TmIf(TmIf(TmIsZero(TmSucc(TmZero)), TmSucc(TmZero), TmIsZero(TmZero)),TmIf(TmTrue,TmTrue,TmTrue),TmFalse),TmSucc(TmSucc(TmSucc(TmZero))),TmFalse) in
-*)
-  (t,Initial) |> show_step_by_step;
+
+let main t =
+  (t, Initial) |> show_step_by_step;
   print_newline()
+
+
+let _ =
+  let input = Array.to_list Sys.argv in
+  match input with
+  | [_; input_file] ->
+    begin
+      try make_t input_file |> main with
+        err -> Printf.printf "%s\n" (make_error (NoSuchFile(input_file)))
+    end
+  | _ -> Printf.printf "%s\n" (make_error WrongNumberOfArguments)
