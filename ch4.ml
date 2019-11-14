@@ -36,22 +36,27 @@ let rec isval t =
 
 let rec eval1 t =
   match t with
+  | TmIf (TmWrong, _, _) -> (TmWrong, E_Error)
   | TmIf (TmTrue, t2, _) -> (t2, E_IfTrue)
   | TmIf (TmFalse, _, t3) -> (t3, E_IfFalse)
-  | TmIf (t1, t2, t3) -> 
+  | TmIf (t1, t2, t3) ->
     let (t1',_) = eval1 t1 in
     (TmIf(t1', t2, t3), E_If)
+  | TmSucc(TmWrong) -> (TmWrong, E_Error)
   | TmSucc (t1) ->
     let (t1',_) = eval1 t1 in
     (TmSucc(t1'), E_Succ)
+  | TmPred(TmWrong) -> (TmWrong, E_Error)
   | TmPred(TmZero) -> (TmZero, E_PredZero)
   | TmPred(TmSucc(nv1)) when (isnumericval nv1) -> (nv1, E_PredSucc)
   | TmPred(t1) ->
     let (t1',_) = eval1 t1 in
     (TmPred(t1'), E_Pred)
+  | TmIsZero(TmWrong) -> (TmWrong, E_Error)
   | TmIsZero(TmZero) -> (TmTrue, E_IsZeroZero)
   | TmIsZero(TmSucc(nv1)) when (isnumericval nv1) -> (TmFalse, E_IsZeroSucc)
-  | TmIsZero(t1) when not (isval t1) ->
+
+  | TmIsZero(t1)->
     let (t1',_) = eval1 t1 in
     (TmIsZero(t1'), E_IsZero)
   | _ -> (TmWrong,E_Error)
