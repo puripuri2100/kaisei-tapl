@@ -9,15 +9,15 @@ let alnum = digit | alpha
 
 rule lex = parse
   | space   { lex lexbuf }
-  | "if"  {TmlIf}
+  | "if"  {If}
   | "then" {Then}
   | "else" {Else}
-  | "true"  {TmlTrue}
-  | "false" {TmlFalse}
-  | "succ"  {TmlSucc}
-  | "pred"  {TmlPred}
-  | "zero"  {TmlZero}
-  | "is_zero" {TmlIsZero}
+  | "true"  {True}
+  | "false" {False}
+  | "succ"  {Succ}
+  | "pred"  {Pred}
+  | "zero"  {Zero}
+  | "is_zero" {IsZero}
   | "(" {LPAREN}
   | ")" {RPAREN}
   | eof {EOF}

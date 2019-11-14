@@ -16,10 +16,7 @@ type rule =
   | E_IsZeroSucc
   | E_IsZero
   | Initial
-
-
-exception NoRuleApplies
-
+  | E_Error
 
 let rec isnumericval t =
   match t with
@@ -56,17 +53,13 @@ let rec eval1 t =
   | TmIsZero(t1) ->
     let (t1',_) = eval1 t1 in
     (TmIsZero(t1'), E_IsZero)
-  | _ -> raise NoRuleApplies
+  | _ -> (TmWrong,E_Error)
 
 
 let rec eval t =
-  let tr'opt =
-    try let (t', r') = eval1 t in Some(t', r')
-    with NoRuleApplies -> None
-  in
-  match tr'opt with
-  | Some(t', r') -> eval t'
-  | None -> t
+  match t with
+  | value when isval t -> value
+  | term -> let (t',r') = eval1 term in eval t'
 
 
 let rec term_to_string t = match t with
@@ -77,6 +70,7 @@ let rec term_to_string t = match t with
   | TmSucc(t1) -> "TmSucc(" ^ term_to_string t1 ^ ")"
   | TmPred(t1) -> "TmPred(" ^ term_to_string t1 ^ ")"
   | TmIsZero(t1) -> "TmIsZero(" ^ term_to_string t1 ^ ")"
+  | TmWrong -> "TmWrong"
 
 let rule_to_string r = match r with
   | E_IfTrue -> "E_IfTrue"
@@ -90,21 +84,19 @@ let rule_to_string r = match r with
   | E_IsZeroSucc -> "E_IsZeroSucc"
   | E_IsZero -> "E_IsZero"
   | Initial -> "Initial"
+  | E_Error -> "E_Error"
 
 let rec show tr =
   let (t,r) = tr in
   Printf.printf "%s by %s\n" (term_to_string t) (rule_to_string r)
 
-
 let rec show_step_by_step tr =
   let (t, r) = tr in
-  let tr'opt =
-    try let (t', r') = eval1 t in Some(t', r')
-    with NoRuleApplies -> None
-  in
-  match tr'opt with
-  | Some(t', r') -> let _ = show tr in show_step_by_step (t', r')
-  | None -> show tr
+  match t with
+  | v when isval v -> show tr
+  | term ->
+    let (t', r') = eval1 t in
+    let _ = show tr in show_step_by_step (t', r')
 
 
 let make_t file_name =
