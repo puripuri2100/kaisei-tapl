@@ -30,6 +30,7 @@ let rec isval t =
   | TmTrue -> true
   | TmFalse -> true
   | t when isnumericval t -> true (*数値であればtrue*)
+  | TmWrong -> true
   | _ -> false 
 
 
@@ -50,7 +51,7 @@ let rec eval1 t =
     (TmPred(t1'), E_Pred)
   | TmIsZero(TmZero) -> (TmTrue, E_IsZeroZero)
   | TmIsZero(TmSucc(nv1)) when (isnumericval nv1) -> (TmFalse, E_IsZeroSucc)
-  | TmIsZero(t1) ->
+  | TmIsZero(t1) when not (isval t1) ->
     let (t1',_) = eval1 t1 in
     (TmIsZero(t1'), E_IsZero)
   | _ -> (TmWrong,E_Error)
