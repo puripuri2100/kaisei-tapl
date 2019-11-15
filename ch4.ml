@@ -120,6 +120,8 @@ let _ =
   | [_; input_file] ->
     begin
       try make_t input_file |> main with
-        err -> Printf.printf "%s\n" (make_error (NoSuchFile(input_file)))
+        | Sys_error _ -> Printf.printf "%s\n" (make_error (NoSuchFile(input_file)))
+        | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
+        | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
     end
   | _ -> Printf.printf "%s\n" (make_error WrongNumberOfArguments)
