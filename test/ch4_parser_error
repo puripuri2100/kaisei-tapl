@@ -1,0 +1,3 @@
+if is_zero(zero) then
+  if is_zero(succ(false)) then
+
