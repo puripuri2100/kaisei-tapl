@@ -122,10 +122,10 @@ let main_of_string str =
 
 let arg_spec =
   [
-    ("-f", Arg.String main_of_file, "input text file");
-    ("--file", Arg.String main_of_file, "input text file");
-    ("-s", Arg.String main_of_string, "input string");
-    ("--str", Arg.String main_of_string, "input string");
+    ("-f",     Arg.String main_of_file,   "input text file");
+    ("--file", Arg.String main_of_file,   "input text file");
+    ("-t",     Arg.String main_of_string, "input text"     );
+    ("--text", Arg.String main_of_string, "input text"     );
   ]
 
 
