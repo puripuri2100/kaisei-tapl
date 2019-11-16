@@ -24,8 +24,6 @@ let rec isnumericval t =
   | TmSucc(t1) -> isnumericval t1
   | _ -> false
 
-
-
 let rec isval t =
   match t with
   | TmTrue -> true
