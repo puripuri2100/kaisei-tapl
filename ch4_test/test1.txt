@@ -1,0 +1,4 @@
+if is_zero(succ(succ(succ(zero)))) then
+    true
+  else
+    is_zero(succ(succ(succ(false))))
