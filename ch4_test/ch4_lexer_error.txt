@@ -1,0 +1,4 @@
+if iszero (succ (zero)) then
+    true
+  else
+    false

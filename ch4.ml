@@ -99,22 +99,29 @@ let rec show_step_by_step tr =
     let _ = show tr in show_step_by_step (t', r')
 
 
-let make_t file_name =
+let main_of_file file_name =
   let channel = open_in file_name in
-  channel |> Lexing.from_channel |> parse lex
+  let t = channel |> Lexing.from_channel |> parse lex in
+    try  (t, Initial) |> show_step_by_step with
+      | Sys_error _ -> Printf.printf "%s\n" (make_error (NoSuchFile(file_name)))
+      | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
+      | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
 
 
-let main t =
-  (t, Initial) |> show_step_by_step;
-  print_newline()
+let main_of_string str =
+  let t = str |> Lexing.from_string |> parse lex in
+    try  (t, Initial) |> show_step_by_step with
+      | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
+      | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
 
 
-let _ =
-  let input = Array.to_list Sys.argv in
-  match input with
-  | [_; input_file] ->
-    begin
-      try make_t input_file |> main with
-        err -> Printf.printf "%s\n" (make_error (NoSuchFile(input_file)))
-    end
-  | _ -> Printf.printf "%s\n" (make_error WrongNumberOfArguments)
+let arg_spec =
+  [
+    ("-f",     Arg.String main_of_file,   "input text file");
+    ("--file", Arg.String main_of_file,   "input text file");
+    ("-t",     Arg.String main_of_string, "input text"     );
+    ("--text", Arg.String main_of_string, "input text"     );
+  ]
+
+
+let _ = Arg.parse arg_spec (fun file_name -> main_of_file file_name) ""
