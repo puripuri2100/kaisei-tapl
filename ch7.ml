@@ -116,7 +116,7 @@ let main_of_file file_name =
   let channel = open_in file_name in
   let t = channel |> Lexing.from_channel |> parse lex in
   let ctx = [] in
-    try  t |> show ctx with
+    try  t |> show_step_by_step ctx with
       | Sys_error _ -> Printf.printf "%s\n" (make_error (NoSuchFile(file_name)))
       | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
       | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
