@@ -10,10 +10,12 @@ ch4_test : ch4
 	./ch4 ch4_test/test1.txt
 
 
-ch7: ch7.ml tapl_base.ml
+ch7: ch7.ml tapl_base.ml ch7_sub.ml ch7_lex.mll ch7_parse.mly
 	-mkdir ch7_build
-	cp tapl_base.ml ch7.ml ch7_build
-	cd ch7_build && ocamlc -o ch7 tapl_base.ml ch7.ml
+	cp tapl_base.ml ch7.ml ch7_sub.ml ch7_lex.mll ch7_parse.mly ch7_build
+	cd ch7_build && ocamllex ch7_lex.mll
+	cd ch7_build && ocamlyacc ch7_parse.mly
+	cd ch7_build && ocamlc -o ch7 tapl_base.ml ch7_sub.ml ch7_parse.mli ch7_parse.ml ch7_lex.ml ch7.ml
 	cp ch7_build/ch7 ./
 
 
