@@ -10,6 +10,14 @@ type binding = NameBind
 type context = (string * binding) list
 
 
+let rec eq t1 t2 =
+  match (t1, t2) with
+  | (TmVar(x1, t'1), TmVar(x2, t'2)) when (x1 = x2 && t'1 = t'2) -> true
+  | (TmAbs(s1, t'1), TmAbs(s2, t'2)) when (s1 = s2 && eq t'1 t'2) -> true
+  | (TmApp(t1_1, t2_1), TmApp(t1_2, t2_2)) when (eq t1_1 t1_2 && eq t2_1 t2_2) -> true
+  | _ -> false
+
+
 let rec pickfrechname lst str =
   let new_str = str ^ "'" in
   let check (s, _) = (s = str) in
@@ -108,7 +116,10 @@ let rec show_step_by_step ctx t =
   | v when isval ctx v -> show ctx t
   | term ->
     let t' = eval1 ctx t in
-    let _ = show ctx t in show_step_by_step ctx t'
+      if eq t t' then
+        show ctx t
+      else
+        let _ = show ctx t in show_step_by_step ctx t'
 
 
 
