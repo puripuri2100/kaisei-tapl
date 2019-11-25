@@ -9,7 +9,7 @@
 %token EOF
 
 %start parse
-%type <Ch7_sub.term> parse
+%type <Ch7_sub.labeledterm> parse
 
 %%
 
@@ -17,9 +17,18 @@
 parse :
   | term EOF { $1 }
 term :
-  | STR {TmVar(0, 1)}
-  | term term {TmApp($1, $2)}
-  | LAMBDA STR DOT term {TmAbs($2, $4)}
+  | var {$1}
+  | app {$1}
+  | LAMBDA STR DOT term {LtmAbs($2, $4)}
+pterm :
   | LPAREN term RPAREN {$2}
+var :
+  | STR {LtmVar($1)}
+septerm :
+  | pterm {$1}
+  | var {$1}
+app :
+  | septerm septerm {LtmApp($1,$2)}
+  | app septerm {LtmApp($1,$2)}
 
 %%
