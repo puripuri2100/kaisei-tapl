@@ -1,101 +1,105 @@
-type term =
-  | TmVar of int * int
-  | TmAbs of string * term
-  | TmApp of term * term
 
+open Tapl_base
 
-type binding = NameBind
+open Ch7_sub
+open Ch7_parse
+open Ch7_lex
+open Ch7_bridge
 
-
-type context = (string * binding) list
-
-
-let rec pickfrechname lst str =
-  let new_str = str ^ "'" in
-  let check (s, _) = (s = new_str) in
-    if List.exists check lst then
-      pickfrechname lst new_str
-    else
-      let new_ctx = (new_str, NameBind) :: lst in
-      (new_ctx, new_str)
-
-
-let index2name ctx t =
-  if List.length ctx <= t then
-    None
-  else
-    Some(List.nth ctx t |> (fun (s, _) -> s))
-
-
-let get_option a opt =
-  match opt with
-  | Some(a') -> a'
-  | None -> a
-
-
-let ctxlength ctx = List.length ctx
-
-
-let rec term_to_string ctx t =
-  match t with
-  | TmAbs(x, t1) ->
-    let (ctx', x') = pickfrechname ctx x in
-    "(λ " ^  x' ^ ". " ^ term_to_string ctx' t1 ^ ")"
+let rec term_to_string term =
+  match term with
+  | TmAbs(t) ->
+    "λ. " ^ term_to_string t
   | TmApp(t1, t2) ->
-    "(" ^ term_to_string ctx t1 ^ ". " ^ term_to_string ctx t2 ^ ")"
-  | TmVar(x, n) ->
-    if ctxlength ctx = n then
-      index2name ctx x |> get_option "[bad index]"
-    else
-      "[bad index]"
+    "( " ^ term_to_string t1 ^ " )  ( " ^ term_to_string t2 ^ " )"
+  | TmVar(n) ->
+    string_of_int n
+  | TmWrong -> "TmWrong"
 
 
-let termShift d t =
-  let rec walk c t =
-    match t with
-    | TmVar(x, n) when (x >= c) -> TmVar(x + d, n + d)
-    | TmVar(x, n) -> TmVar(x, n + d)
-    | TmAbs(x, t1) -> TmAbs(x, walk(c + 1) t1)
-    | TmApp(t1, t2) -> TmApp(walk c t1, walk c t2)
-  in
-    walk 0 t
+let rec termShift d c term =
+    match term with
+    | TmVar(x) when (x >= c) -> TmVar(x + d)
+    | TmVar(x) -> TmVar(x)
+    | TmAbs(t) -> TmAbs(termShift d (c+1) t)
+    | TmApp(t1, t2) -> TmApp(termShift d c t1,termShift d c t2)
+    | _ -> TmWrong
 
 
-let termSubst j s t =
-  let rec walk c t =
-    match t with
-    | TmVar(x, n) when (x = j + c) -> termShift c s
-    | TmVar(x, n) -> TmVar(x, n)
-    | TmAbs(x, t1) -> TmAbs(x, walk (c + 1) t1)
-    | TmApp(t1, t2) -> TmApp(walk c t1, walk c t2)
-  in
-    walk 0 t
+let rec termSubst j s term =
+    match term with
+    | TmVar(x) when (x = j) -> s
+    | TmVar(x) -> TmVar(x)
+    | TmAbs(t1) -> TmAbs(termSubst (j+1) (termShift 1 0 s) term)
+    | TmApp(t1, t2) -> TmApp(termSubst j s t1, termSubst j s t2)
+    | _ -> TmWrong
 
 
 let termSubstTop s t =
-    termShift (-1) (termSubst 0 (termShift 1 s) t)
+    termShift (-1) 0 (termSubst 0 (termShift 1 0 s) t)
 
 
-let rec isval ctx t =
+let isval t =
   match t with
-  | TmAbs(_, _) -> true
+  | TmAbs(_) -> true
+  | TmWrong -> true
   | _ -> false
 
 
-let rec eval1 ctx t =
+let rec eval1 t =
   match t with
-  | TmApp(TmAbs(x, t12), v2) when isval ctx v2 ->
+  | TmApp(TmAbs(t12), v2) when isval v2 ->
     termSubstTop v2 t12
-  | TmApp(v1, t2) when isval ctx v1 ->
-    let t2' = eval1 ctx t2 in
+  | TmApp(v1, t2) when isval v1 ->
+    let t2' = eval1 t2 in
     TmApp(v1, t2')
   | TmApp(t1, t2) ->
-    let t1' = eval1 ctx t1 in
+    let t1' = eval1 t1 in
     TmApp(t1', t2)
   | _ -> TmWrong
 
 
-let main =
-  let t = TmApp(TmAbs("x", TmVar(0, 1)), TmAbs("y", TmVar(0, 1))) in
+let show t =
+  Printf.printf "%s\n" (term_to_string t)
+
+
+let rec show_step_by_step t =
+  match t with
+  | v when isval v -> show t
+  | term ->
+    let t' = eval1 t in
+      let _ = show t in show_step_by_step t'
+
+
+
+let main_of_file file_name =
+  let channel = open_in file_name in
+  let t = channel |> Lexing.from_channel |> parse lex in
   let ctx = [] in
-    eval1 ctx t |> term_to_string ctx |> Printf.printf "%s\n"
+    try  t |> (remove_name ctx) |> show_step_by_step with
+      | Sys_error _ -> Printf.printf "%s\n" (make_error (NoSuchFile(file_name)))
+      | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
+      | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
+      | UndefinedName -> Printf.printf "%s\n" "UndefinedName"
+
+
+let main_of_string str =
+  let t = str |> Lexing.from_string |> parse lex  in
+  let ctx = [] in
+    try  t |> remove_name ctx|> show_step_by_step with
+      | Parsing.Parse_error ->  Printf.printf "%s\n" (make_error ParserError)
+      | Failure _ -> Printf.printf "%s\n" (make_error LexerError)
+
+
+let arg_spec =
+  [
+    ("-f",     Arg.String main_of_file,   "input text file");
+    ("--file", Arg.String main_of_file,   "input text file");
+    ("-t",     Arg.String main_of_string, "input text"     );
+    ("--text", Arg.String main_of_string, "input text"     );
+  ]
+
+
+let main =
+  Arg.parse arg_spec (fun file_name -> main_of_file file_name) ""
+

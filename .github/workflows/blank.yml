@@ -14,4 +14,6 @@ jobs:
           sudo apt update
           sudo apt -y install ocaml
       - name: run
-        run: make ch4
+        run: |
+          make ch4
+          make ch7
