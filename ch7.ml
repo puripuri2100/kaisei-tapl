@@ -2,7 +2,6 @@ type term =
   | TmVar of int * int
   | TmAbs of string * term
   | TmApp of term * term
-  | TmWrong
 
 
 type binding = NameBind
@@ -49,7 +48,6 @@ let rec term_to_string ctx t =
       index2name ctx x |> get_option "[bad index]"
     else
       "[bad index]"
-  | TmWrong -> "TmWrong"
 
 
 let termShift d t =
@@ -59,7 +57,6 @@ let termShift d t =
     | TmVar(x, n) -> TmVar(x, n + d)
     | TmAbs(x, t1) -> TmAbs(x, walk(c + 1) t1)
     | TmApp(t1, t2) -> TmApp(walk c t1, walk c t2)
-    | TmWrong -> TmWrong
   in
     walk 0 t
 
@@ -71,7 +68,6 @@ let termSubst j s t =
     | TmVar(x, n) -> TmVar(x, n)
     | TmAbs(x, t1) -> TmAbs(x, walk (c + 1) t1)
     | TmApp(t1, t2) -> TmApp(walk c t1, walk c t2)
-    | TmWrong -> TmWrong
   in
     walk 0 t
 
@@ -83,7 +79,6 @@ let termSubstTop s t =
 let rec isval ctx t =
   match t with
   | TmAbs(_, _) -> true
-  | TmWrong -> true
   | _ -> false
 
 
