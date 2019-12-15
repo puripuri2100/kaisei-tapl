@@ -28,7 +28,7 @@ let rec isval t =
   match t with
   | TmTrue -> true
   | TmFalse -> true
-  | t when isnumericval t -> true (*数値であればtrue*)
+  | t when isnumericval t -> true
   | TmWrong -> true
   | _ -> false 
 

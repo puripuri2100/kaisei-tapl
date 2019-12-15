@@ -1,4 +1,8 @@
-ch4_build
-ch4
-ch7_build
-ch7
+*/_build
+ch4/ch4
+ch7/ch7
+*.mli
+*.o
+*.out
+*.cmi
+*.cmx
