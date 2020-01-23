@@ -45,7 +45,7 @@ let rec show_step_by_step term =
         | term ->  Printf.printf "%s\n" (term_to_string term); show_step_by_step (eval1 term)
 
 let main =
-    let typed_term = TypedTrue in
+    let typed_term = TypedVar("a") in
     let _ = typeof [] typed_term in
     let term = erase_type typed_term in
     show_step_by_step term;
