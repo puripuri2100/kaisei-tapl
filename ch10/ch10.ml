@@ -2,6 +2,7 @@ open Tapl_base
 
 open Ch10_sub
 open Ch10_typechecking
+open Ch10_bridge
 
 let rec is_val term =
     match term with
@@ -41,3 +42,12 @@ let rec show_step_by_step term =
     match term with
         | v when is_val v -> { Printf.printf "%s\n" (term_to_string v)}
         | term -> { Printf.printf "%s\n" (term_to_string term); show_step_by_step (eval1 term)}
+
+let main =
+    let typed_term = TypedTrue in
+    let () = typeof [] typed_term in
+    let term = erase_type typed_term in
+    show_step_by_step term;
+     
+
+
