@@ -22,6 +22,7 @@ term :
   | LAMBDA STR COLON ty DOT term {TypedAbs($2,$4,$6)}
   | TRUE {TypedTrue}
   | FALSE {TypedFalse}
+  | pterm {$1}
 pterm :
   | LPAREN term RPAREN {$2}
 var :
@@ -34,6 +35,7 @@ app :
   | app septerm {TypedApp($1,$2)}
 ty :
   | TY_BOOL {TyBool}
+  | LPAREN ty RPAREN {$2}
   | LPAREN ty ARROW ty RPAREN {TyArr($2,$4)}
 
 %%
