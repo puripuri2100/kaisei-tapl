@@ -1,0 +1,13 @@
+(
+\c1:bool.\c2:bool.
+    if (c1) {
+        if(c2){
+            true
+        }else{
+            false
+        }
+    }else{
+        false
+    }
+)
+(true) (true)

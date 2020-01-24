@@ -15,9 +15,13 @@ rule lex = parse
   | "bool" {TY_BOOL}
   | "true" {TRUE}
   | "false" {FALSE}
-  | alpha+ as s {STR(s)}
+  | "if" {IF}
+  | "else" {ELSE}
+  | alpha alnum* as s {STR(s)}
   | ":" {COLON}
   | "->" {ARROW}
   | "(" {LPAREN}
   | ")" {RPAREN}
+  | "{" {LBRACE}
+  | "}" {RBRACE}
   | eof {EOF}

@@ -20,6 +20,7 @@ let rec term_subst term dist value =
         | TmVar(s) when (=) s dist -> value
         | TmAbs(s,t) -> TmAbs(s,term_subst t dist value)
         | TmApp(t1,t2) -> TmApp(term_subst t1 dist value,term_subst t2 dist value)
+        | TmIf(c,t1,t2) -> TmIf(term_subst c dist value,term_subst t1 dist value,term_subst t2 dist value)
         | x -> x
 
 let rec eval1 term =
@@ -27,6 +28,9 @@ let rec eval1 term =
         | TmApp(TmAbs(s,t),v) when is_val v -> term_subst t s v
         | TmApp(v,t) when is_val v -> TmApp(v,eval1 t)
         | TmApp(t1,t2) -> TmApp(eval1 t1,t2)
+        | TmIf(TmTrue,t1,t2) -> t1
+        | TmIf(TmFalse,t1,t2) -> t2
+        | TmIf(c,t1,t2) -> TmIf(eval1 c,t1,t2)
         | x -> x
 
 let rec term_to_string term =
@@ -36,6 +40,7 @@ let rec term_to_string term =
         | TmApp(t1,t2) -> "( " ^ term_to_string t1 ^ " ) ( " ^ term_to_string t2 ^ " )"
         | TmTrue -> "TRUE"
         | TmFalse -> "FALSE"
+        | TmIf(c,t1,t2) -> "IF "^(term_to_string c)^" THEN { " ^ (term_to_string t1) ^ " } ELSE { " ^ (term_to_string t2) ^ " }"
 
 
 let show term = 

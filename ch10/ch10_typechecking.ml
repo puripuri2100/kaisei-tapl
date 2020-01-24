@@ -36,3 +36,8 @@ let rec typeof ctx term =
             )
         | TypedTrue -> TyBool
         | TypedFalse -> TyBool
+        | TypedIf(c,t1,t2) ->
+            if (<>) (typeof ctx c) TyBool then make_error "Condition should be Boolean";
+            match (typeof ctx t1) with
+                | tyT1 when (=) tyT1 (typeof ctx t2) -> tyT1
+                | _ -> make_error "Type of then-expr should be equal to else-expr";
