@@ -1,5 +1,5 @@
 
-open Tapl_base
+open Ch7_base
 
 open Ch7_sub
 open Ch7_parse
@@ -99,7 +99,9 @@ let arg_spec =
     ("--text", Arg.String main_of_string, "input text"     );
   ]
 
+let usagemsg =
+  "Kaisei-Taplにusageはありません。残念です。"
 
 let main =
-  Arg.parse arg_spec (fun file_name -> main_of_file file_name) ""
+  Arg.parse arg_spec (fun file_name -> main_of_file file_name) usagemsg
 

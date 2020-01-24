@@ -13,5 +13,4 @@ let make_error error =
     | ParserError -> "Syntax Error at Parser"
     | WrongNumberOfArguments -> "Wrong number of arguments"
   in
-  let main = "![Error]  " ^ message in
-    main
+  ("![Error]  " ^ message)

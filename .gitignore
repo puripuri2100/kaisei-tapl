@@ -6,3 +6,4 @@ ch7/ch7
 *.out
 *.cmi
 *.cmx
+node_modules
