@@ -1,6 +1,7 @@
 */_build
 ch4/ch4
 ch7/ch7
+ch10/test/_build
 *.mli
 *.o
 *.out
