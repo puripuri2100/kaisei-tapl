@@ -1,11 +1,7 @@
 .PHONY: ch4 ch7 ch10 clean
 
-ch4: tapl_base.ml ch4/ch4.ml ch4/ch4_lex.mll ch4/ch4_parse.mly
+ch4: ch4
 	cd ch4 && make build
-
-
-ch4_test : ch4
-	ch4/ch4 ch4/ch4_test/test1.txt
 
 
 ch7: ch7
@@ -14,6 +10,9 @@ ch7: ch7
 
 ch10: ch10
 	cd ch10 && make build
+
+ch10_test: ch10
+	cd ch10/test && make test
 
 
 clean:

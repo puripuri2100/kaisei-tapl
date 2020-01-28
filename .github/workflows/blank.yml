@@ -17,3 +17,4 @@ jobs:
         run: |
           make ch4
           make ch7
+          make ch10
